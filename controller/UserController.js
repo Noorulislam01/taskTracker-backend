@@ -1,5 +1,5 @@
+const bcrypt = require('bcryptjs');
 
-const bcrypt = require('bcrypt');
 const Users = require('../models/Users');
 const generateAuthToken = require('../midddlewares/generateToken');
 
