@@ -1,27 +1,30 @@
 const Project = require("../models/Project");
 const Task = require("../models/Task");
 
-// Create a task under a specific project
+
 exports.createTask = async (req, res) => {
-  try {
-    const { projectId, title, description } = req.body;
-
-    // Check if project belongs to user
-    const project = await Project.findOne({ _id: projectId, userId: req.userId });
-    if (!project) return res.status(404).json({ message: 'Project not found or access denied' });
-
-    const task = new Task({
-      projectId,
-      title,
-      description
-    });
-
-    await task.save();
-    res.status(201).json(task);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-};
+    try {
+      const { projectId, title, description, expectedCompletion } = req.body;
+  
+      // Check if project belongs to user
+      const project = await Project.findOne({ _id: projectId, userId: req.userId });
+      if (!project) return res.status(404).json({ message: 'Project not found or access denied' });
+  
+      const task = new Task({
+        projectId,
+        title,
+        description,
+        expectedCompletionTime: new Date(expectedCompletion) // 👈 Convert to Date type
+      });
+  
+      await task.save();
+      res.status(201).json(task);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error', error: err.message });
+    }
+  };
+  
 
 // Read all tasks for a given project
 exports.getTasks = async (req, res) => {
