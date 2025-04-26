@@ -28,19 +28,35 @@ exports.createTask = async (req, res) => {
 
 // Read all tasks for a given project
 exports.getTasks = async (req, res) => {
-  try {
-    const { projectId } = req.params;
-
-    // Verify access to project
-    const project = await Project.findOne({ _id: projectId, userId: req.userId });
-    if (!project) return res.status(404).json({ message: 'Project not found or access denied' });
-
-    const tasks = await Task.find({ projectId });
-    res.json(tasks);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-};
+    try {
+      const { projectId } = req.params;
+  
+      // Verify access to project
+      const project = await Project.findOne({ _id: projectId, userId: req.userId });
+      if (!project) return res.status(404).json({ message: 'Project not found or access denied' });
+  
+      // Get all tasks for the project
+      const tasks = await Task.find({ projectId });
+  
+      
+      // Organize tasks by status
+      const tasksByStatus = {
+        'Not Started': tasks.filter(task => task.status === 'Not Started'),
+        'In Progress': tasks.filter(task => task.status === 'In Progress'),
+        'Completed': tasks.filter(task => task.status === 'Completed'),
+        'Delayed': tasks.filter(task => task.status === 'Delayed')
+      };
+  
+      // Return both task counts and tasks categorized by status
+      res.json({
+        tasksByStatus,
+       
+      });
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err.message });
+    }
+  };
+  
 
 // Update a task
 exports.updateTask = async (req, res) => {
