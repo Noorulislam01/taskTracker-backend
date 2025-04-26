@@ -60,26 +60,42 @@ exports.getTasks = async (req, res) => {
 
 // Update a task
 exports.updateTask = async (req, res) => {
-  try {
-    const { taskId } = req.params;
-    const { title, description, status, completedAt } = req.body;
-
-    const task = await Task.findById(taskId).populate('projectId');
-    if (!task || task.projectId.userId.toString() !== req.userId) {
-      return res.status(404).json({ message: 'Task not found or access denied' });
+    try {
+      const { taskId } = req.params;
+      const updateData = req.body;  // Capture all fields in the request body to allow flexible updates
+  
+      // Find the task by its ID
+      const task = await Task.findById(taskId).populate('projectId');
+      
+      // Check if the task exists and if the user is authorized to update it
+      if (!task || task.projectId.userId.toString() !== req.userId) {
+        return res.status(404).json({ message: 'Task not found or access denied' });
+      }
+  
+      // List of allowed fields to update
+      const allowedFields = [
+        'title',
+        'description',
+        'status',
+        'completedAt',
+        'expectedCompletionTime'
+      ];
+  
+      // Update the task dynamically with allowed fields
+      allowedFields.forEach((field) => {
+        if (updateData[field] !== undefined) { // Check if field exists in the body
+          task[field] = updateData[field]; // Update the field dynamically
+        }
+      });
+  
+      // Save the updated task
+      await task.save();
+      res.json(task);  // Send the updated task back in the response
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err.message });
     }
-
-    task.title = title || task.title;
-    task.description = description || task.description;
-    task.status = status || task.status;
-    task.completedAt = completedAt || task.completedAt;
-
-    await task.save();
-    res.json(task);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-};
+  };
+  
 
 // Delete a task
 exports.deleteTask = async (req, res) => {
