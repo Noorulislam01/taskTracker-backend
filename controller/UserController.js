@@ -56,20 +56,19 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // Check if user exists
+    
     const user = await Users.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Compare password
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate token
     const token = generateAuthToken(user);
 
     res.status(200).json({

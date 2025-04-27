@@ -1,7 +1,7 @@
 const Project = require("../models/Project");
 const Task = require("../models/Task");
 
-// Create a new project (limit 4 projects per user)
+
 exports.createProject = async (req, res) => {
   try {
     const userId = req.userId;
@@ -30,7 +30,6 @@ exports.createProject = async (req, res) => {
 exports.getAllProjects = async (req, res) => {
   try {
     const userId = req.userId;
-    // console.log("API hit");
 
     const projects = await Project.find({ userId }).sort({ createdAt: -1 });
 
@@ -45,7 +44,7 @@ exports.getAllProjects = async (req, res) => {
       const tasks = await Task.find({ projectId: project._id });
       const taskCount = tasks.length;
 
-      // If project has no tasks, treat as 'Not Started'
+     
       if (taskCount === 0) {
         projectStatusGroups['Not Started'].push({ 
           ...project.toObject(), 
@@ -66,7 +65,6 @@ exports.getAllProjects = async (req, res) => {
       });
     }
 
-    // console.log("Answer:", projectStatusGroups);
     res.json(projectStatusGroups);
 
   } catch (err) {
