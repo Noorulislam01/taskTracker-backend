@@ -4,7 +4,7 @@ const authenticate = require('../midddlewares/authenticate');
 const router = express.Router();
 
 
-const { createProject, getAllProjects } = require('../controller/projectController');
+const { createProject, getAllProjects, deleteProject } = require('../controller/projectController');
 const { createTask, getTasks, updateTask, deleteTask } = require('../controller/taskController');
 
 
@@ -15,6 +15,7 @@ router.get('/tasks/:projectId', authenticate, getTasks);
 router.put('/updateTasks/:taskId', authenticate, updateTask);
 router.delete('/delteTask/:taskId', authenticate, deleteTask);
 router.get('/all',authenticate,getAllProjects)
+router.delete("/delete/:projectId",authenticate,deleteProject)
 
 module.exports = router;
 

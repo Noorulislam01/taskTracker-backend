@@ -74,3 +74,23 @@ exports.getAllProjects = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+
+exports.deleteProject = async (req, res) => {
+    try {
+      const { projectId } = req.params;
+  
+      const project = await Project.findById(projectId);
+  
+      if (!project ) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+  
+      await project.deleteOne();
+      res.json({ message: 'Project deleted successfully' });
+      
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err.message });
+    }
+  };
+  
