@@ -112,3 +112,30 @@ exports.allUsers = async (req, res) => {
     });
   }
 };
+
+
+exports.userDetails = async (req, res) => {
+  try {
+    const userId = req.userId;
+   
+    const user = await Users.findById(userId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Users fetched successfully',
+      code: 200,
+      data: {
+        user: user
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong',
+      code: 500,
+      error: error.message
+    });
+  }
+};
+
+

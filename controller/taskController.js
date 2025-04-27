@@ -99,17 +99,20 @@ exports.updateTask = async (req, res) => {
 
 // Delete a task
 exports.deleteTask = async (req, res) => {
-  try {
-    const { taskId } = req.params;
-
-    const task = await Task.findById(taskId).populate('projectId');
-    if (!task || task.projectId.userId.toString() !== req.userId) {
-      return res.status(404).json({ message: 'Task not found or access denied' });
+    try {
+      const { taskId } = req.params;
+  
+      const task = await Task.findById(taskId).populate('projectId');
+  
+      if (!task || task.projectId.userId.toString() !== req.userId) {
+        return res.status(404).json({ message: 'Task not found or access denied' });
+      }
+  
+      await task.deleteOne();
+      res.json({ message: 'Task deleted successfully' });
+      
+    } catch (err) {
+      res.status(500).json({ message: 'Server error', error: err.message });
     }
-
-    await task.remove();
-    res.json({ message: 'Task deleted' });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-};
+  };
+  
