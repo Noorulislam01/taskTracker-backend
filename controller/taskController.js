@@ -116,3 +116,35 @@ exports.deleteTask = async (req, res) => {
     }
   };
   
+
+
+
+  // Controller to update only the task's status
+exports.updateTaskStatus = async (req, res) => {
+    const { taskId, newStatus } = req.body;
+  
+    if (!taskId || !newStatus) {
+      return res.status(400).json({ message: 'Task ID and new status are required.' });
+    }
+  
+    try {
+      const task = await Task.findById(taskId);
+  
+      if (!task) {
+        return res.status(404).json({ message: 'Task not found.' });
+      }
+  
+      task.status = newStatus; // Only updating status
+      await task.save();       // Saving the task
+  
+      res.status(200).json({
+        message: 'Task status updated successfully.',
+        task,
+      });
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      res.status(500).json({ message: 'Internal Server Error.' });
+    }
+  };
+  
+  
